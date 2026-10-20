@@ -1,0 +1,59 @@
+# File Name: titanic_eda.py
+# Description: Task 2 - Exploratory Data Analysis (EDA) for CodeAlpha
+
+import numpy as np
+import pandas as pd
+
+print("==========================================")
+print("TASK 2: EXPLORATORY DATA ANALYSIS (EDA)")
+print("==========================================")
+
+# 1. Load the Dataset
+url = "https://raw.githubusercontent.com/datasciencedojo/datasets/master/titanic.csv"
+df = pd.read_csv(url)
+
+# 2. Inspect Data Structure & Types
+print("\n--- 1. DATASET STRUCTURE (info) ---")
+print(df.info())
+
+# 3. Check Missing Values & Duplicates
+print("\n--- 2. MISSING VALUES CHECK ---")
+print(df.isnull().sum())
+
+print("\n--- 3. DUPLICATE ROWS CHECK ---")
+print(f"Number of duplicate rows: {df.duplicated().sum()}")
+
+# 4. Statistical Summaries
+print("\n--- 4. NUMERICAL DESCRIPTIVE STATISTICS ---")
+print(df.describe())
+
+print("\n--- 5. CATEGORICAL DESCRIPTIVE STATISTICS ---")
+print(df.describe(include=['O']))
+
+# 5. Data Cleaning & Anomaly Handling
+df['Age'] = df['Age'].fillna(df['Age'].median())
+df['Embarked'] = df['Embarked'].fillna(df['Embarked'].mode()[0])
+df_cleaned = df.drop(columns=['Cabin'])
+
+# Outlier Detection using IQR on 'Fare'
+Q1 = df_cleaned['Fare'].quantile(0.25)
+Q3 = df_cleaned['Fare'].quantile(0.75)
+IQR = Q3 - Q1
+outliers = df_cleaned[(df_cleaned['Fare'] < (Q1 - 1.5 * IQR)) | (df_cleaned['Fare'] > (Q3 + 1.5 * IQR))]
+print(f"\n--- 6. ANOMALY DETECTION ---")
+print(f"Detected {len(outliers)} high-fare outlier records in the dataset.")
+
+# 6. Statistical Insights & Hypothesis Validation
+print("\n--- 7. KEY STATISTICAL METRICS ---")
+overall_survival = df_cleaned['Survived'].mean() * 100
+print(f"Overall Survival Rate: {overall_survival:.2f}%")
+
+gender_survival = (df_cleaned.groupby('Sex')['Survived'].mean() * 100).round(2)
+print("\nSurvival Rate by Gender (%):")
+print(gender_survival)
+
+class_survival = (df_cleaned.groupby('Pclass')['Survived'].mean() * 100).round(2)
+print("\nSurvival Rate by Passenger Class (%):")
+print(class_survival)
+
+print("\nTask 2 EDA Script Completed Successfully!")
