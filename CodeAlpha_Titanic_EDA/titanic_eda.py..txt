@@ -8,9 +8,14 @@ print("==========================================")
 print("TASK 2: EXPLORATORY DATA ANALYSIS (EDA)")
 print("==========================================")
 
-# 1. Load the Dataset
-url = "https://raw.githubusercontent.com/datasciencedojo/datasets/master/titanic.csv"
-df = pd.read_csv(url)
+# 1. Load the Dataset (Supports local 'titanic.csv' or falls back to online URL)
+try:
+    df = pd.read_csv('titanic.csv')
+    print("Loaded dataset successfully from local file.")
+except FileNotFoundError:
+    url = "https://raw.githubusercontent.com/datasciencedojo/datasets/master/titanic.csv"
+    df = pd.read_csv(url)
+    print("Loaded dataset from online repository URL.")
 
 # 2. Inspect Data Structure & Types
 print("\n--- 1. DATASET STRUCTURE (info) ---")
